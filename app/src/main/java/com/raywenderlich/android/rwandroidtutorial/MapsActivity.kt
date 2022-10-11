@@ -256,13 +256,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
 
     showUserLocation()
 
-    // 시작위치를 서울시청 위/경도로
+    // Add a marker in 서울 시청 and move the camera
     val latitude = 37.5666805
     val longitude = 126.9784147
-    val SeoulLatLong = LatLng(latitude, longitude)
+    val seoulLatLong = LatLng(latitude, longitude)
 
     val zoomLevel = 9.5f
-    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(SeoulLatLong, zoomLevel))
+    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(seoulLatLong, zoomLevel))
 
     // Draw all the previous points on the map
     if (isTracking) {
