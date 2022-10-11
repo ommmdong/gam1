@@ -187,11 +187,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
   }
 
   private fun updateAllDisplayText(stepCount: Int, totalDistanceTravelled: Float) {
-    binding.numberOfStepTextView.text =  String.format("Step count: %d", stepCount)
-    binding.totalDistanceTextView.text = String.format("Total distance: %.2fm", totalDistanceTravelled)
+    binding.numberOfStepTextView.text =  String.format("걸음 수: %d", stepCount)
+    binding.totalDistanceTextView.text = String.format("총 거리: %.2fm", totalDistanceTravelled)
 
     val averagePace = if (stepCount != 0) totalDistanceTravelled / stepCount.toDouble() else 0.0
-    binding.averagePaceTextView.text = String.format("Average pace: %.2fm/ step", averagePace)
+    binding.averagePaceTextView.text = String.format("평균 속도: %.2fm/ step", averagePace)
   }
 
   private fun endButtonClicked() {
@@ -256,13 +256,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
 
     showUserLocation()
 
-    // Add a marker in Hong Kong and move the camera
-    val latitude = 22.3193
-    val longitude = 114.1694
-    val hongKongLatLong = LatLng(latitude, longitude)
+    // Add a marker in 서울 시청 and move the camera
+    val latitude = 37.5666805
+    val longitude = 126.9784147
+    val seoulLatLong = LatLng(latitude, longitude)
 
     val zoomLevel = 9.5f
-    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(hongKongLatLong, zoomLevel))
+    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(seoulLatLong, zoomLevel))
 
     // Draw all the previous points on the map
     if (isTracking) {

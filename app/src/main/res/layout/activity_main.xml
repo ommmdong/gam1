@@ -8,7 +8,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:gravity="center"
-      android:text="Tracker"
+      android:text="Polyline"
       android:textSize="24sp"
       android:textStyle="bold" />
 
@@ -22,7 +22,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="start" />
+        android:text="시작" />
 
     <Button
         android:id="@+id/endButton"
@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_weight="1"
-        android:text="end"/>
+        android:text="종료"/>
   </LinearLayout>
 
   <TextView
@@ -39,7 +39,7 @@
       android:layout_height="wrap_content"
       android:layout_marginTop="16dp"
       android:paddingStart="16dp"
-      android:text="Number of step: "
+      android:text="걸음 수: "
       android:textSize="16sp"
       android:textStyle="bold" />
   <TextView
@@ -47,7 +47,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:paddingStart="16dp"
-      android:text="Total distance: "
+      android:text="총 거리: "
       android:textSize="16sp"
       android:textStyle="bold" />
   <TextView
@@ -55,7 +55,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:paddingStart="16dp"
-      android:text="Average pace: "
+      android:text="평균 속도: "
       android:layout_marginBottom="16dp"
       android:textSize="16sp"
       android:textStyle="bold" />
