@@ -4,6 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
   <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
   <application
       android:allowBackup="false"
       android:icon="@mipmap/ic_launcher"

@@ -35,8 +35,12 @@
 package com.raywenderlich.android.runtracking
 
 import android.Manifest
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission.ACTIVITY_RECOGNITION
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -49,6 +53,8 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -61,17 +67,19 @@ import com.raywenderlich.android.rwandroidtutorial.MapsActivityViewModel
 import com.raywenderlich.android.rwandroidtutorial.MapsActivityViewModelFactory
 import com.raywenderlich.android.rwandroidtutorial.TrackingApplication
 import com.raywenderlich.android.rwandroidtutorial.TrackingEntity
-import java.util.*
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.annotations.AfterPermissionGranted
-import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.Manifest.permission.ACTIVITY_RECOGNITION
+import java.util.*
+
 /**
  * Main Screen
  */
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListener {
   private lateinit var binding: ActivityMainBinding
 
+  //권한
+  val permissons = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION)
+  val PERM_FLAG = 99
   // ViewModel
   private val mapsActivityViewModel: MapsActivityViewModel by viewModels {
     MapsActivityViewModelFactory(getTrackingRepository())
@@ -79,15 +87,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
 
   // Location & Map
   private lateinit var mMap: GoogleMap
-  private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+  private lateinit var fusedLocationProviderClient: FusedLocationProviderClient //내위치 가져오는 정확도,소모량 자동으로 정하는애
   private var polylineOptions = PolylineOptions()
-  private val locationCallback = object: LocationCallback() {
+  private val locationCallback = object: LocationCallback() {//내위치 가져오는 응답값 처리
     override fun onLocationResult(locationResult: LocationResult?) {
       super.onLocationResult(locationResult)
       locationResult ?: return
       locationResult.locations.forEach {
         val trackingEntity = TrackingEntity(Calendar.getInstance().timeInMillis, it.latitude, it.longitude)
         mapsActivityViewModel.insert(trackingEntity)
+        Log.v("LOCATION_UPDATE", it.latitude.toString() + ", " + it.latitude.toString())
       }
     }
   }
@@ -114,9 +123,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
     val view = binding.root
     setContentView(view)
 
-    // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-    val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-    mapFragment.getMapAsync(this)
+    //권한체크
+    if(isPermitted()){
+      startProcess()
+    }else{
+      ActivityCompat.requestPermissions(this,permissons,PERM_FLAG)
+    }
+
 
     // Location
     fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
@@ -240,6 +253,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
     sensorManager.unregisterListener(this, stepCounterSensor)
   }
 
+  fun isPermitted() : Boolean{
+    for(perm in permissons){
+      if(ContextCompat.checkSelfPermission(this,perm) != PERMISSION_GRANTED){
+        return false
+      }
+    }
+    return true
+  }
+
+  fun startProcess(){
+    // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+    val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+    mapFragment.getMapAsync(this)
+  }
+
+
   // Map related codes
   /**
    * Manipulates the map once available.
@@ -332,7 +361,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
   }
 
   @AfterPermissionGranted(REQUEST_CODE_FINE_LOCATION)
-  private fun setupLocationChangeListener() {
+  private fun setupLocationChangeListener() { //이게 setUpdateLocationLister
     if (EasyPermissions.hasPermissions(this, ACCESS_FINE_LOCATION)) {
       val locationRequest = LocationRequest()
       locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
@@ -351,9 +380,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, SensorEventListene
 
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
       grantResults: IntArray) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-    // EasyPermissions handles the request result.
-    EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    when(requestCode){
+      PERM_FLAG -> {
+        var check = true
+        for(grant in grantResults) {
+          if(grant != PERMISSION_GRANTED) {
+            check = false
+            break
+          }
+        }
+        if(check){
+          startProcess()
+        }else{
+          Toast.makeText(this,"권한을 승인해야지만 앱을 사용할 수 있습니다.",Toast.LENGTH_LONG).show()
+        }
+      }
+    }
   }
 }
